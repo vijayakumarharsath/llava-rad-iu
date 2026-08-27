@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLaVA-Rad (IU) - report drafts for human review</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --ink: #1c1e21; --mut: #6b7280;
+    --line: #e3e6ea; --acc: #2563eb; --ref: #047857; --base: #6b7280;
+    --ft: #2563eb; --warn: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: #111827; color: #fff; padding: 10px 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  header h1 { font-size: 17px; margin: 0 12px 0 0; }
+  .banner { background: var(--warn); color: #fff; font-weight: 600; padding: 3px 10px; border-radius: 6px; font-size: 13px; }
+  #modelchip { margin-left: auto; font-size: 13px; padding: 3px 10px; border-radius: 999px; background: #374151; }
+  #modelchip.ready { background: #065f46; }
+  .cols { display: flex; gap: 14px; padding: 14px; align-items: flex-start; }
+  aside { width: 330px; flex: 0 0 330px; display: flex; flex-direction: column; gap: 12px; }
+  section.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  section.box h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); margin: 0 0 8px; }
+  .rlist { max-height: 300px; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+  .rlist button { text-align: left; border: 1px solid var(--line); background: #fafafa; border-radius: 8px; padding: 6px 8px; cursor: pointer; font: inherit; }
+  .rlist button:hover { border-color: var(--acc); background: #eff6ff; }
+  .rlist .delta { float: right; font-size: 12px; }
+  .delta.up { color: #047857; } .delta.down { color: #b91c1c; }
+  .tag { display: inline-block; font-size: 11px; border-radius: 999px; padding: 1px 8px; background: #e5e7eb; color: #374151; }
+  input[type=text], input[type=search] { width: 100%; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+  .row { display: flex; gap: 8px; margin-top: 8px; }
+  .row input { flex: 1; }
+  button.go { border: 0; background: var(--acc); color: #fff; border-radius: 8px; padding: 7px 14px; cursor: pointer; font: inherit; }
+  button.go:disabled { background: #9ca3af; cursor: wait; }
+  main { flex: 1; min-width: 0; }
+  .case { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .case h2 { margin: 0 0 4px; font-size: 18px; }
+  .q { color: var(--mut); font-size: 13px; margin: 0 0 10px; }
+  .casebody { display: flex; gap: 14px; }
+  .casebody img { width: 300px; flex: 0 0 300px; border-radius: 8px; border: 1px solid var(--line); background: #000; }
+  .reports { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .rep { border: 1px solid var(--line); border-left: 4px solid var(--mut); border-radius: 8px; padding: 8px 12px; }
+  .rep h3 { margin: 0 0 4px; font-size: 13px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .rep p { margin: 0; white-space: pre-wrap; }
+  .rep.ref { border-left-color: var(--ref); }
+  .rep.base { border-left-color: var(--base); }
+  .rep.ft { border-left-color: var(--ft); }
+  .rep.live { border-left-color: #b45309; background: #fffbeb; }
+  .score { font-size: 11px; font-weight: 400; color: var(--mut); background: #f3f4f6; border-radius: 999px; padding: 1px 8px; }
+  details.sect { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-top: 12px; }
+  details.sect summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+  table { border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+  td, th { border: 1px solid var(--line); padding: 5px 12px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  .tl { font: 13px/1.7 ui-monospace, monospace; margin: 8px 0 0; white-space: pre-wrap; }
+  .kv { margin: 8px 0 0; }
+  .kv div { display: flex; gap: 10px; padding: 2px 0; }
+  .kv b { flex: 0 0 110px; text-align: right; color: var(--mut); font-weight: 600; }
+  .err { color: var(--warn); margin-top: 8px; font-size: 14px; }
+  .hint { color: var(--mut); font-size: 12px; margin-top: 6px; }
+  .empty { color: var(--mut); padding: 40px 10px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>LLaVA-Rad on IU chest X-rays</h1>
+  <span class="banner">DRAFT reports for human review &mdash; never a diagnosis</span>
+  <span id="modelchip">model loading&hellip;</span>
+</header>
+
+<div class="cols">
+  <aside>
+    <section class="box">
+      <h2>Review set (16)</h2>
+      <div id="reviewlist" class="rlist"><div class="empty">loading&hellip;</div></div>
+    </section>
+    <section class="box">
+      <h2>Any of the 500 test cases</h2>
+      <input id="search" type="search" list="idlist" placeholder="type an id, e.g. CXR2516" autocomplete="off">
+      <datalist id="idlist"></datalist>
+      <div class="row"><button class="go" id="gobtn">Show case</button></div>
+    </section>
+    <section class="box">
+      <h2>Live predict (fine-tuned model)</h2>
+      <input id="livefile" type="file" accept=".png,.jpg,.jpeg,.dcm">
+      <div class="row">
+        <input id="liveid" type="text" list="idlist" placeholder="...or a test id instead of a file">
+        <button class="go" id="runbtn">Run</button>
+      </div>
+      <div class="hint">A file (png or dcm) and/or an id. Files are decoded on this machine; nothing is uploaded anywhere.</div>
+      <div id="liveerr" class="err"></div>
+    </section>
+  </aside>
+
+  <main>
+    <div id="casewrap"><div class="case"><div class="empty">Pick a case from the review set, search one of the 500, or run a live prediction.</div></div></div>
+
+    <details class="sect" open>
+      <summary>Metrics (n = 500 held-out test X-rays)</summary>
+      <div id="metrics">loading&hellip;</div>
+    </details>
+
+    <details class="sect">
+      <summary>Training details (real run)</summary>
+      <div id="training" class="kv">loading&hellip;</div>
+    </details>
+  </main>
+</div>
+
+<script>
+let BOOTS = null;
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+function scoresHtml(r, side) {
+  if (!r) return "";
+  const pick = p => {
+    const k = Object.keys(r).filter(k => k.startsWith(p) && typeof r[k] === "number");
+    return k.map(k => `${k.slice(p.length)}=${r[k].toFixed(3)}`).join(" &middot; ");
+  };
+  return `<span class="score">${pick(side)}</span>`;
+}
+
+function repHtml(title, cls, text, scoreHtml) {
+  return `<div class="rep ${cls}"><h3>${title} ${scoreHtml}</h3><p>${esc(text)}</p></div>`;
+}
+
+function renderCase(c) {
+  const img = c.image ? `<img src="/img/${encodeURIComponent(c.image)}" alt="x-ray ${esc(c.id)}">` : "";
+  const rev = c.review || {};
+  const bScore = rev.baseline_rg_er != null
+    ? scoresHtml({ "baseline_rg_er": rev.baseline_rg_er, "baseline_rouge_l_f1": rev.baseline_rouge_l_f1 }, "baseline_") : "";
+  const fScore = rev.finetuned_rg_er != null
+    ? scoresHtml({ "finetuned_rg_er": rev.finetuned_rg_er, "finetuned_rouge_l_f1": rev.finetuned_rouge_l_f1 }, "finetuned_") : "";
+  const tag = rev.reason ? `<span class="tag">${esc(rev.reason)}</span>` : "";
+  const delta = rev.delta_rg_er != null
+    ? `<span class="delta ${rev.delta_rg_er >= 0 ? "up" : "down"}" style="float:none"> &Delta;rg_er ${rev.delta_rg_er >= 0 ? "+" : ""}${rev.delta_rg_er.toFixed(3)}</span>` : "";
+  document.getElementById("casewrap").innerHTML = `
+    <div class="case">
+      <h2>${esc(c.id)} ${tag} ${delta}</h2>
+      ${c.query ? `<p class="q">${esc(c.query)}</p>` : ""}
+      <div class="casebody">
+        ${img}
+        <div class="reports">
+          ${repHtml("Reference (radiologist)", "ref", c.reference, "")}
+          ${c.baseline != null ? repHtml("Baseline (official LLaVA-Rad)", "base", c.baseline, bScore) : ""}
+          ${c.finetuned != null ? repHtml("Fine-tuned (your LoRA)", "ft", c.finetuned, fScore) : ""}
+        </div>
+      </div>
+    </div>`;
+}
+
+async function showCase(rid) {
+  document.getElementById("casewrap").innerHTML =
+    `<div class="case"><div class="empty">loading ${esc(rid)}&hellip;</div></div>`;
+  const r = await fetch("/api/case/" + encodeURIComponent(rid));
+  if (!r.ok) {
+    const j = await r.json().catch(() => ({}));
+    document.getElementById("casewrap").innerHTML =
+      `<div class="case"><div class="err">${esc(j.error || "failed to load case")}</div></div>`;
+    return;
+  }
+  renderCase(await r.json());
+}
+
+function renderLive(j) {
+  const img = j.image
+    ? `<img src="${esc(j.image)}" alt="input image">`
+    : (j.image_b64 ? `<img src="data:image/png;base64,${j.image_b64}" alt="input image">` : "");
+  const meta = (Array.isArray(j.dcm_meta) && j.dcm_meta.length)
+    ? `<div class="rep" style="border-left-color:#0e7490"><h3>DICOM header (patient / study data)</h3><div class="kv">${j.dcm_meta.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join("")}</div></div>`
+    : "";
+  document.getElementById("casewrap").innerHTML = `
+    <div class="case">
+      <h2>${esc(j.id || "custom image")} <span class="tag">live</span></h2>
+      <div class="casebody">
+        ${img}
+        <div class="reports">
+          ${meta}
+          ${j.reference != null ? repHtml("Reference (radiologist)", "ref", j.reference, "") : ""}
+          ${repHtml(`Fine-tuned (LIVE, ${j.seconds}s)`, "live", j.prediction, "")}
+        </div>
+      </div>
+      <p class="hint">Draft for human review, never a diagnosis.</p>
+    </div>`;
+}
+
+async function runLive() {
+  const errEl = document.getElementById("liveerr");
+  const runBtn = document.getElementById("runbtn");
+  errEl.textContent = "";
+  const fd = new FormData();
+  const f = document.getElementById("livefile").files[0];
+  if (f) fd.append("file", f);
+  const idv = document.getElementById("liveid").value.trim();
+  if (idv) fd.append("rid", idv);
+  if (!f && !idv) { errEl.textContent = "pick a file or type an id first"; return; }
+  runBtn.disabled = true;
+  document.getElementById("casewrap").innerHTML =
+    `<div class="case"><div class="empty">running the model&hellip; (first run may take a few seconds)</div></div>`;
+  try {
+    const r = await fetch("/api/predict", { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) errEl.textContent = j.error || ("HTTP " + r.status) +
+      (j.candidates ? "\nDid you mean: " + j.candidates.join(", ") : "");
+    else renderLive(j);
+  } catch (e) {
+    errEl.textContent = String(e);
+  } finally {
+    runBtn.disabled = false;
+  }
+}
+
+function renderMetrics(m) {
+  if (!m || !m.baseline || !m.finetuned) {
+    document.getElementById("metrics").textContent = "no metrics.json yet";
+    return;
+  }
+  const rows = [
+    ["baseline", m.baseline],
+    ["fine-tuned", m.finetuned],
+  ];
+  let h = `<table><tr><th></th><th>rg_e</th><th>rg_er</th><th>rg_bar_er</th><th>rouge_l</th></tr>`;
+  for (const [name, blk] of rows) {
+    const rg = blk.rg || {};
+    h += `<tr><td>${name}</td><td>${(rg.rg_e||0).toFixed(4)}</td><td>${(rg.rg_er||0).toFixed(4)}</td><td>${(rg.rg_bar_er||0).toFixed(4)}</td><td>${(blk.rouge_l||0).toFixed(4)}</td></tr>`;
+  }
+  const d = (a, b) => (b - a);
+  h += `<tr><td>delta</td><td>${d(m.baseline.rg.rg_e, m.finetuned.rg.rg_e).toFixed(4)}</td><td>${d(m.baseline.rg.rg_er, m.finetuned.rg.rg_er).toFixed(4)}</td><td>${d(m.baseline.rg.rg_bar_er, m.finetuned.rg.rg_bar_er).toFixed(4)}</td><td>${d(m.baseline.rouge_l, m.finetuned.rouge_l).toFixed(4)}</td></tr></table>`;
+  h += `<p class="hint">headline metric: ${esc(m.headline_metric || "rg_er")} (closest to the published baseline 0.287). ${esc(m.notes || "")}</p>`;
+  document.getElementById("metrics").innerHTML = h;
+}
+
+function renderTraining(t) {
+  let h = "";
+  for (const [k, v] of (t.rows || [])) h += `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`;
+  if (t.log_line) h += `<pre class="tl">${esc(t.log_line)}</pre>`;
+  document.getElementById("training").innerHTML = h;
+}
+
+async function boot() {
+  const r = await fetch("/api/bootstrap");
+  BOOTS = await r.json();
+  // review list
+  const list = document.getElementById("reviewlist");
+  list.innerHTML = "";
+  for (const s of BOOTS.review) {
+    const b = document.createElement("button");
+    const d = s.delta_rg_er;
+    b.innerHTML = `${esc(s.id)} <span class="tag">${esc(s.reason)}</span>
+      <span class="delta ${d >= 0 ? "up" : "down"}">${d >= 0 ? "+" : ""}${d.toFixed(2)}</span>`;
+    b.onclick = () => showCase(s.id);
+    list.appendChild(b);
+  }
+  // datalist of all 500 ids
+  const dl = document.getElementById("idlist");
+  dl.innerHTML = BOOTS.ids.map(i => `<option value="${esc(i)}">`).join("");
+  document.getElementById("gobtn").onclick = () => {
+    const v = document.getElementById("search").value.trim();
+    if (v) showCase(v);
+  };
+  document.getElementById("search").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("gobtn").click();
+  });
+  document.getElementById("runbtn").onclick = runLive;
+  renderMetrics(BOOTS.metrics);
+  renderTraining(BOOTS.train);
+  // model status poll
+  const chip = document.getElementById("modelchip");
+  const poll = setInterval(async () => {
+    try {
+      const s = await (await fetch("/api/status")).json();
+      if (s.ready) { chip.textContent = "model ready"; chip.className = "ready"; clearInterval(poll); }
+    } catch (e) { /* server restarting */ }
+  }, 2000);
+}
+
+boot();
+</script>
+</body>
+</html>

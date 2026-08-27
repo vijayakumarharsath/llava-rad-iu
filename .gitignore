@@ -1,0 +1,19 @@
+# never commit model weights or raw archives
+*.safetensors
+*.pt
+*.bin
+*.tgz
+*.part*
+llava-rad-checkpoints/
+
+# patient files: UI uploads and the demo dicom
+uploads/
+ishita/
+
+# logs, caches, training state
+*.log
+nohup.out
+__pycache__/
+*.pyc
+trainer_state.json
+checkpoint-*/

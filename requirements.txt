@@ -1,0 +1,13 @@
+# install torch first (cu128 build), see README setup step 2
+transformers==4.40.2
+peft==0.10.0
+bitsandbytes==0.45.3
+accelerate
+radgraph==0.1.18
+pydicom==3.0.2
+Pillow
+numpy==1.26.0
+fastapi
+uvicorn[standard]
+python-multipart
+huggingface_hub

@@ -1,0 +1,25 @@
+{
+  "baseline": {
+    "rouge_l": 0.20372109997120877,
+    "rg": {
+      "rg_e": 0.3077214531237429,
+      "rg_er": 0.28766101756839146,
+      "rg_bar_er": 0.2225175034006998
+    },
+    "rg_how": "F1RadGraph(reward_level='all', model_type='radgraph-xl')",
+    "n": 500
+  },
+  "finetuned": {
+    "rouge_l": 0.26732237786824364,
+    "rg": {
+      "rg_e": 0.35261862211525297,
+      "rg_er": 0.3341609631403087,
+      "rg_bar_er": 0.27971508333521766
+    },
+    "rg_how": "F1RadGraph(reward_level='all', model_type='radgraph-xl')",
+    "n": 500
+  },
+  "headline_metric": "rg_er",
+  "delta_headline": 0.04649994557191722,
+  "notes": "generation: greedy, max_new_tokens=256, conv v1; model: 4-bit nf4 double-quant + LoRA r=64 unmerged, BiomedCLIP-CXR frozen; rouge_l: whitespace-token LCS, case-sensitive"
+}

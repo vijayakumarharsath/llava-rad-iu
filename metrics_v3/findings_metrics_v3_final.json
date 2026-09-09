@@ -1,0 +1,28 @@
+{
+  "clean": false,
+  "n": 500,
+  "refs_normal": 127,
+  "refs_abnormal": 373,
+  "labeler": "rule-based (findlabel.py), 14 CheXbert conditions, negation-aware; official CheXbert weights not publicly available (HF repo gone as of 2026-08-28)",
+  "per_label": {
+    "Enlarged Cardiomediastinum": {"baseline": {"tp": 0, "fp": 1, "fn": 0, "f1": 0.0}, "finetuned": {"tp": 0, "fp": 0, "fn": 0, "f1": 0.0}},
+    "Cardiomegaly": {"baseline": {"tp": 3, "fp": 6, "fn": 19, "f1": 0.1935}, "finetuned": {"tp": 7, "fp": 14, "fn": 15, "f1": 0.3256}},
+    "Lung Opacity": {"baseline": {"tp": 5, "fp": 12, "fn": 77, "f1": 0.101}, "finetuned": {"tp": 24, "fp": 35, "fn": 58, "f1": 0.3404}},
+    "Lung Lesion": {"baseline": {"tp": 2, "fp": 10, "fn": 37, "f1": 0.0784}, "finetuned": {"tp": 4, "fp": 18, "fn": 35, "f1": 0.1311}},
+    "Edema": {"baseline": {"tp": 2, "fp": 18, "fn": 30, "f1": 0.0769}, "finetuned": {"tp": 7, "fp": 12, "fn": 25, "f1": 0.2745}},
+    "Consolidation": {"baseline": {"tp": 22, "fp": 34, "fn": 90, "f1": 0.2619}, "finetuned": {"tp": 37, "fp": 52, "fn": 75, "f1": 0.3682}},
+    "Pneumonia": {"baseline": {"tp": 6, "fp": 40, "fn": 11, "f1": 0.1905}, "finetuned": {"tp": 1, "fp": 3, "fn": 16, "f1": 0.0952}},
+    "Atelectasis": {"baseline": {"tp": 5, "fp": 6, "fn": 22, "f1": 0.2632}, "finetuned": {"tp": 6, "fp": 13, "fn": 21, "f1": 0.2609}},
+    "Pneumothorax": {"baseline": {"tp": 46, "fp": 43, "fn": 217, "f1": 0.2614}, "finetuned": {"tp": 123, "fp": 96, "fn": 140, "f1": 0.5104}},
+    "Pleural Effusion": {"baseline": {"tp": 53, "fp": 53, "fn": 212, "f1": 0.2857}, "finetuned": {"tp": 111, "fp": 85, "fn": 154, "f1": 0.4816}},
+    "Pleural Other": {"baseline": {"tp": 0, "fp": 1, "fn": 6, "f1": 0.0}, "finetuned": {"tp": 0, "fp": 1, "fn": 6, "f1": 0.0}},
+    "Fracture": {"baseline": {"tp": 6, "fp": 11, "fn": 12, "f1": 0.3429}, "finetuned": {"tp": 4, "fp": 9, "fn": 14, "f1": 0.2581}},
+    "Support Devices": {"baseline": {"tp": 8, "fp": 8, "fn": 10, "f1": 0.4706}, "finetuned": {"tp": 4, "fp": 2, "fn": 14, "f1": 0.3333}},
+    "No Finding": {"baseline": {"tp": 75, "fp": 180, "fn": 56, "f1": 0.3886}, "finetuned": {"tp": 75, "fp": 137, "fn": 56, "f1": 0.4373}}
+  },
+  "macro_f1": {"baseline": 0.2082, "finetuned": 0.2726},
+  "split": {
+    "baseline": {"abn_fp": 147, "abn_fn": 743, "normal_false_alarm": 51},
+    "finetuned": {"abn_fp": 218, "abn_fn": 573, "normal_false_alarm": 53}
+  }
+}

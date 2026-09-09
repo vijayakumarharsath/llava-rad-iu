@@ -1,0 +1,24 @@
+{
+  "clean": false,
+  "n": 500,
+  "refs_abnormal": 373,
+  "note": "FP = entity (tokens,label) in prediction not in reference (ungrounded; not necessarily a false finding). FN = reference entity missing from prediction. Entity identity = the same (tokens,label) key radgraph uses for rg_e.",
+  "baseline": {
+    "rg": {"rg_e": 0.3077, "rg_er": 0.2877, "rg_bar_er": 0.2225},
+    "rouge_l": 0.2037,
+    "entities": {
+      "overall": {"n": 500, "tp": 2183, "fp": 4221, "fn": 5668, "fp_per_report": 8.442, "fn_per_report": 11.336, "entity_precision": 0.3409, "entity_recall": 0.2781},
+      "abnormal": {"n": 373, "tp": 1676, "fp": 3144, "fn": 4493, "fp_per_report": 8.429, "fn_per_report": 12.0456, "entity_precision": 0.3477, "entity_recall": 0.2717},
+      "normal": {"n": 127, "tp": 507, "fp": 1077, "fn": 1175, "fp_per_report": 8.4803, "fn_per_report": 9.252, "entity_precision": 0.3201, "entity_recall": 0.3014}
+    }
+  },
+  "finetuned": {
+    "rg": {"rg_e": 0.3783, "rg_er": 0.3503, "rg_bar_er": 0.2904},
+    "rouge_l": 0.2794,
+    "entities": {
+      "overall": {"n": 500, "tp": 2617, "fp": 3655, "fn": 5234, "fp_per_report": 7.31, "fn_per_report": 10.468, "entity_precision": 0.4173, "entity_recall": 0.3333},
+      "abnormal": {"n": 373, "tp": 1991, "fp": 2876, "fn": 4178, "fp_per_report": 7.7105, "fn_per_report": 11.2011, "entity_precision": 0.4091, "entity_recall": 0.3227},
+      "normal": {"n": 127, "tp": 626, "fp": 779, "fn": 1056, "fp_per_report": 6.1339, "fn_per_report": 8.315, "entity_precision": 0.4456, "entity_recall": 0.3722}
+    }
+  }
+}

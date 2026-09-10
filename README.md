@@ -48,7 +48,7 @@ rg_er by <= 0.001 and no conclusion flips.
 
 Adapter weights for the v3 checkpoint-531 model (LoRA adapter +
 `non_lora_trainables.bin` projector) are on Hugging Face:
-`vijayakumarharsath/llava-rad-iu-v3`. Load with the bf16 loaders in this
+`HarsathV/llava-rad-iu-v3`. Load with the bf16 loaders in this
 repo (`run_v3_eval.py` for IU, `mimic_eval.py` for MIMIC) - both do the full
 load: vicuna-7b-v1.5 base + LLaVA config patch + projector install + unmerged
 adapter, all in bf16 to match training.
@@ -88,7 +88,7 @@ Weights, all from Hugging Face:
 
     huggingface-cli download lmsys/vicuna-7b-v1.5 --local-dir ~/llava-rad-checkpoints/vicuna-7b-v1.5
     huggingface-cli download microsoft/llava-rad --local-dir ~/llava-rad-checkpoints/llavarad
-    huggingface-cli download vijayakumarharsath/llava-rad-iu-v3 --local-dir ~/llava-rad-checkpoints/llava-rad-iu-v3/checkpoint-531
+    huggingface-cli download HarsathV/llava-rad-iu-v3 --local-dir ~/llava-rad-checkpoints/llava-rad-iu-v3/checkpoint-531
 
 The evaluation scripts take the checkpoint directory, base model, vision
 tower config/weights and prediction files as arguments; see each script's
